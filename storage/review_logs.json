@@ -1,0 +1,27 @@
+{
+  "coverage": 100.0,
+  "total_functions": 4,
+  "missing_docstrings": 0,
+  "results": [
+    {
+      "file": "unknown",
+      "function": "display_student_result",
+      "docstring": "\n    Function Name: display_student_result\n\n    Description:\n    This function performs its intended task.\n\n    Returns:\n    None\n    "
+    },
+    {
+      "file": "unknown",
+      "function": "__init__",
+      "docstring": "\n    Function Name: __init__\n\n    Description:\n    This function performs its intended task.\n\n    Returns:\n    None\n    "
+    },
+    {
+      "file": "unknown",
+      "function": "get_average",
+      "docstring": "\n    Function Name: get_average\n\n    Description:\n    This function performs its intended task.\n\n    Returns:\n    None\n    "
+    },
+    {
+      "file": "unknown",
+      "function": "get_result",
+      "docstring": "\n    Function Name: get_result\n\n    Description:\n    This function performs its intended task.\n\n    Returns:\n    None\n    "
+    }
+  ]
+}
