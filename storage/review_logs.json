@@ -1,27 +1,23 @@
 {
-  "coverage": 100.0,
+  "coverage": 0.0,
   "total_functions": 4,
-  "missing_docstrings": 0,
+  "missing_docstrings": 4,
   "results": [
     {
-      "file": "unknown",
-      "function": "display_student_result",
-      "docstring": "\n    Function Name: display_student_result\n\n    Description:\n    This function performs its intended task.\n\n    Returns:\n    None\n    "
+      "function": "calculate_average",
+      "docstring": "\"\"\"\ncalculate_average function.\n\nArgs:\n    TODO: Describe parameters.\n\nReturns:\n    TODO: Describe return value.\n\"\"\""
     },
     {
-      "file": "unknown",
-      "function": "__init__",
-      "docstring": "\n    Function Name: __init__\n\n    Description:\n    This function performs its intended task.\n\n    Returns:\n    None\n    "
+      "function": "find_max",
+      "docstring": "\"\"\"\nfind_max function.\n\nArgs:\n    TODO: Describe parameters.\n\nReturns:\n    TODO: Describe return value.\n\"\"\""
     },
     {
-      "file": "unknown",
-      "function": "get_average",
-      "docstring": "\n    Function Name: get_average\n\n    Description:\n    This function performs its intended task.\n\n    Returns:\n    None\n    "
+      "function": "find_min",
+      "docstring": "\"\"\"\nfind_min function.\n\nArgs:\n    TODO: Describe parameters.\n\nReturns:\n    TODO: Describe return value.\n\"\"\""
     },
     {
-      "file": "unknown",
-      "function": "get_result",
-      "docstring": "\n    Function Name: get_result\n\n    Description:\n    This function performs its intended task.\n\n    Returns:\n    None\n    "
+      "function": "process_data",
+      "docstring": "\"\"\"\nprocess_data function.\n\nArgs:\n    TODO: Describe parameters.\n\nReturns:\n    TODO: Describe return value.\n\"\"\""
     }
   ]
 }
