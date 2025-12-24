@@ -1,230 +1,161 @@
-import streamlit as st
-import sys
 import os
 import json
+import streamlit as st
+import matplotlib.pyplot as plt
 
-# --------------------------------------------------
-# PATH SETUP
-# --------------------------------------------------
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
+# ✅ Correct imports (NO src.)
 from parser import parse_python_file
 from docstring_generator import generate_docstring
-from core.review_engine.ai_review import review_file
 
-# --------------------------------------------------
-# PAGE CONFIG
-# --------------------------------------------------
+# Optional AI review (safe)
+try:
+    from core.review_engine.ai_review import ai_review_placeholder
+    GROQ_AVAILABLE = True
+except Exception:
+    GROQ_AVAILABLE = False
+
+
+# ----------------------------
+# Page config
+# ----------------------------
 st.set_page_config(
-    page_title="AI Code Reviewer",
+    page_title="AI Code Reviewer – Milestone 2",
     layout="wide"
 )
 
-# --------------------------------------------------
-# HEADER
-# --------------------------------------------------
-st.markdown(
-    """
-    <div style="background: linear-gradient(90deg, #1e88e5, #1565c0);
-                padding: 20px;
-                border-radius: 10px;">
-        <h1 style="color:white;">AI Code Reviewer</h1>
-        <p style="color:white;">
-            AST-based Docstring Generator • Coverage Analysis • AI Code Review
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
+st.title("🤖 AI Code Reviewer – Milestone 2")
+st.caption("AST Parsing • Docstring Validation • Coverage Analysis")
+
+
+# ----------------------------
+# Sidebar
+# ----------------------------
+st.sidebar.header("📁 Project Files")
+
+EXAMPLES_DIR = "examples"
+files = [f for f in os.listdir(EXAMPLES_DIR) if f.endswith(".py")]
+
+selected_file = st.sidebar.radio(
+    "Select a Python file:",
+    files
 )
 
-st.markdown("")
-
-# --------------------------------------------------
-# SIDEBAR – FILE SELECTION
-# --------------------------------------------------
-st.sidebar.header("📁 Example Files")
-
-EXAMPLES_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "examples")
-)
-
-example_files = []
-if os.path.exists(EXAMPLES_DIR):
-    example_files = [f for f in os.listdir(EXAMPLES_DIR) if f.endswith(".py")]
-
-if example_files:
-    selected_file = st.sidebar.radio(
-        "Select a Python file:",
-        example_files
-    )
-    selected_path = os.path.join(EXAMPLES_DIR, selected_file)
-else:
-    st.sidebar.warning("No Python files found in examples/")
-    selected_path = None
-
-st.sidebar.markdown("---")
-
-# --------------------------------------------------
-# SIDEBAR – OPTIONS
-# --------------------------------------------------
-generate_docstrings_flag = st.sidebar.checkbox(
-    "Generate baseline docstrings",
-    value=True
-)
+generate_docs = st.sidebar.checkbox("Generate baseline docstrings", value=True)
 
 docstring_style = st.sidebar.selectbox(
-    "Docstring Style",
-    ["google", "numpy", "rest"]
+    "Docstring style",
+    ["Google", "NumPy", "reST"]
 )
 
-use_groq = st.sidebar.checkbox(
-    "Use Groq AI Review (Advanced)"
+use_groq = st.sidebar.checkbox("Use Groq AI Review (Advanced)")
+
+
+# ----------------------------
+# Main UI
+# ----------------------------
+file_path = os.path.join(EXAMPLES_DIR, selected_file)
+
+st.subheader("🛠️ AST Parsing Controls")
+st.text_input("Path to scan", file_path, disabled=True)
+
+output_path = st.text_input(
+    "Output JSON path",
+    "storage/review_logs.json"
 )
 
-st.sidebar.markdown("---")
-
-coverage_placeholder = st.sidebar.empty()
-functions_placeholder = st.sidebar.empty()
-
-# --------------------------------------------------
-# MAIN CONTROLS
-# --------------------------------------------------
-col1, col2 = st.columns([3, 1])
-
-with col1:
-    st.subheader("🛠️ AST Parsing Controls")
-
-    path_to_scan = st.text_input(
-        "Path to scan",
-        selected_path if selected_path else "examples"
-    )
-
-    output_json_path = st.text_input(
-        "Output JSON path",
-        "storage/review_logs.json"
-    )
-
-with col2:
-    scan_btn = st.button("🔍 Scan")
-
-# --------------------------------------------------
-# VIEW SELECTION
-# --------------------------------------------------
 view = st.radio(
     "Select View",
-    ["Generated Docstrings", "Coverage Report", "🤖 AI Code Review"],
-    horizontal=True
+    ["Generated Docstrings", "Coverage Report", "AI Code Review"]
 )
 
-# --------------------------------------------------
-# OUTPUT – ONLY AFTER SCAN
-# --------------------------------------------------
-if scan_btn:
+scan = st.button("🔍 Scan")
+
+
+# ----------------------------
+# Scan Logic
+# ----------------------------
+if scan:
     try:
-        functions, classes, imports = parse_python_file(path_to_scan)
+        functions, classes, imports = parse_python_file(file_path)
 
-        # ---------------- DOCSTRING GENERATION ----------------
-        doc_results = []
+        os.makedirs("storage", exist_ok=True)
 
-        for f in functions:
-            if not f.get("docstring") and generate_docstrings_flag:
-                doc = generate_docstring(
-                    f["name"],
-                    "Function",
-                    style=docstring_style
-                )
-            else:
-                doc = f.get("docstring", "Already documented")
-
-            doc_results.append({
-                "function": f["name"],
-                "docstring": doc
-            })
-
-        # ---------------- COVERAGE ----------------
-        total = len(functions)
-        missing = sum(1 for f in functions if not f.get("docstring"))
-        coverage = 100 if total == 0 else round(((total - missing) / total) * 100, 2)
-
-        coverage_placeholder.metric("Coverage %", f"{coverage}%")
-        functions_placeholder.metric("Functions", total)
-
-        report_data = {
-            "coverage": coverage,
-            "total_functions": total,
-            "missing_docstrings": missing,
-            "results": doc_results
+        results = {
+            "file": selected_file,
+            "functions": [],
+            "classes": []
         }
 
-        os.makedirs(os.path.dirname(output_json_path), exist_ok=True)
-        with open(output_json_path, "w") as f:
-            json.dump(report_data, f, indent=2)
+        # ----------------------------
+        # Docstrings
+        # ----------------------------
+        if generate_docs:
+            for f in functions:
+                doc = f["docstring"] or generate_docstring(f["name"], "Function")
+                results["functions"].append({
+                    "name": f["name"],
+                    "docstring": doc
+                })
 
-        # --------------------------------------------------
-        # VIEW HANDLING
-        # --------------------------------------------------
+            for c in classes:
+                doc = c["docstring"] or generate_docstring(c["name"], "Class")
+                results["classes"].append({
+                    "name": c["name"],
+                    "docstring": doc
+                })
+
+        with open(output_path, "w") as fp:
+            json.dump(results, fp, indent=2)
+
+        # ----------------------------
+        # View: Docstrings
+        # ----------------------------
         if view == "Generated Docstrings":
-            st.subheader("📘 Generated Docstrings")
+            st.subheader("📄 Generated Docstrings")
 
-            for item in doc_results:
-                st.markdown(f"### `{item['function']}`")
-                st.code(item["docstring"], language="python")
+            for fn in results["functions"]:
+                with st.expander(f"Function: {fn['name']}"):
+                    st.code(fn["docstring"])
 
+            for cl in results["classes"]:
+                with st.expander(f"Class: {cl['name']}"):
+                    st.code(cl["docstring"])
+
+        # ----------------------------
+        # View: Coverage
+        # ----------------------------
         elif view == "Coverage Report":
-            st.subheader("📊 Documentation Coverage")
+            st.subheader("📊 Coverage Report")
 
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Coverage", f"{coverage}%")
-            c2.metric("Total Functions", total)
-            c3.metric("Missing Docstrings", missing)
+            total = len(functions) + len(classes)
+            documented = len(results["functions"]) + len(results["classes"])
+            coverage = int((documented / total) * 100) if total else 0
 
-            with st.expander("📄 Detailed Report (JSON)"):
-                st.json(report_data)
+            col1, col2 = st.columns(2)
+            col1.metric("Total items", total)
+            col2.metric("Coverage %", coverage)
 
-        elif view == "🤖 AI Code Review":
+            fig, ax = plt.subplots()
+            ax.bar(["Documented", "Missing"], [documented, total - documented])
+            ax.set_ylabel("Count")
+            ax.set_title("Docstring Coverage")
+            st.pyplot(fig)
+
+        # ----------------------------
+        # View: AI Review
+        # ----------------------------
+        elif view == "AI Code Review":
             st.subheader("🤖 AI-Powered Code Review")
 
-            if use_groq:
-                from core.review_engine.groq_review import groq_review_placeholder
-
-                ai_reviews = [
-                    groq_review_placeholder(f["name"], "")
-                    for f in functions
-                ]
+            if use_groq and GROQ_AVAILABLE:
+                for f in functions:
+                    review = ai_review_placeholder(f["name"])
+                    with st.expander(f"Review: {f['name']}"):
+                        st.write(review)
             else:
-                ai_reviews = review_file(functions)
-
-            if not ai_reviews:
-                st.warning("No functions found to review.")
-            else:
-                for review in ai_reviews:
-                    with st.expander(f"🔍 Function: {review['function']}"):
-                        colA, colB = st.columns([2, 1])
-
-                        with colA:
-                            st.markdown("### ⚠ Issues")
-                            if review["issues"]:
-                                for issue in review["issues"]:
-                                    st.write(f"- {issue}")
-                            else:
-                                st.success("No issues detected")
-
-                            st.markdown("### 💡 Suggestions")
-                            if review["suggestions"]:
-                                for suggestion in review["suggestions"]:
-                                    st.write(f"- {suggestion}")
-                            else:
-                                st.info("No suggestions needed")
-
-                        with colB:
-                            st.markdown("### 📊 Summary")
-                            st.metric("Verdict", review["verdict"])
-                            st.metric("Complexity", review["complexity"])
+                st.info("Groq AI review not enabled or not configured.")
 
         st.success("✅ Scan completed successfully")
 
     except Exception as e:
         st.error(f"❌ Error during scan: {e}")
-
-else:
-    st.info("Select a file and click **Scan** to view results.")

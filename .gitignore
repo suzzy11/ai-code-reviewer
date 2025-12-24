@@ -1,2 +1,9 @@
+# Python cache
 __pycache__/
 *.pyc
+
+# VS Code
+.vscode/
+
+# Runtime output
+storage/review_logs.json
