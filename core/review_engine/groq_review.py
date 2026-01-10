@@ -1,32 +1,66 @@
+import os
+
+def fallback_docstring(style: str) -> str:
+    if style.lower() == "google":
+        return """Summary.
+
+Args:
+    param: Description.
+
+Returns:
+    Type: Description.
 """
-Groq-based AI Code Review (Placeholder)
+    elif style.lower() == "numpy":
+        return """Summary.
 
-This module simulates AI-based code review using Groq.
-Later, this can be replaced with real Groq API integration.
+Parameters
+----------
+param : type
+    Description.
+
+Returns
+-------
+type
+    Description.
+"""
+    else:
+        return """Summary.
+
+:param param: Description
+:return: Description
 """
 
-def groq_review_placeholder(function_name: str, source_code: str) -> dict:
+def generate_docstring(source_code: str, style: str) -> str:
     """
-    Generate a placeholder AI review for a function.
-
-    Parameters
-    ----------
-    function_name : str
-        Name of the function being reviewed
-    source_code : str
-        Source code of the function
-
-    Returns
-    -------
-    dict
-        AI-generated review feedback
+    Generates docstring using LLM if available,
+    otherwise returns a safe fallback.
     """
-    return {
-        "function": function_name,
-        "summary": f"AI review for `{function_name}` using Groq.",
-        "issues": [
-            "Consider adding type hints",
-            "Docstring could be more descriptive"
-        ],
-        "score": "8/10"
-    }
+    try:
+        from groq import Groq
+
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise RuntimeError("No API key")
+
+        client = Groq(api_key=api_key)
+
+        # Use Llama 3.1 8B (fast & stable)
+        model_id = "llama-3.1-8b-instant" 
+        
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=[{
+                "role": "system",
+                "content": "You are a Python expert. Generate a docstring for the provided function/class. Output ONLY the docstring content (no quotes, no markdown blocks). Match the requested style."
+            }, {
+                "role": "user",
+                "content": f"Style: {style}\nCode:\n{source_code}"
+            }],
+            temperature=0.1
+        )
+
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        # Return error message for UI debugging
+        return f"Error: {str(e)}\n\n(Fallback)\n{fallback_docstring(style)}"

@@ -1,28 +1,16 @@
 import ast
 
-def parse_python_file(file_path: str):
-    """
-    Parse a Python file and extract functions and classes.
-    """
+def extract_functions_from_file(file_path: str):
     with open(file_path, "r", encoding="utf-8") as f:
         tree = ast.parse(f.read())
 
     functions = []
-    classes = []
 
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
             functions.append({
                 "name": node.name,
-                "docstring": ast.get_docstring(node),
-                "lineno": node.lineno
+                "has_docstring": ast.get_docstring(node) is not None
             })
 
-        elif isinstance(node, ast.ClassDef):
-            classes.append({
-                "name": node.name,
-                "docstring": ast.get_docstring(node),
-                "lineno": node.lineno
-            })
-
-    return functions, classes
+    return functions

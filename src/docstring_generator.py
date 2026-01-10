@@ -1,44 +1,15 @@
-def generate_docstring(name, kind, style="google"):
-    """
-    Generate docstrings in different styles.
-    Supported styles: google, numpy, rest
-    """
+from core.parser.python_parser import extract_functions_from_code
+from core.review_engine.groq_review import generate_docstring
 
-    if style == "google":
-        return f'''"""
-{name} {kind.lower()}.
+def generate_for_file(source_code: str, style: str):
+    functions = extract_functions_from_code(source_code)
 
-Args:
-    TODO: Describe parameters.
+    results = []
+    for fn in functions:
+        results.append({
+            "name": fn["name"],
+            "docstring": fn["docstring"],
+            "generated": generate_docstring(source_code, style)
+        })
 
-Returns:
-    TODO: Describe return value.
-"""'''
-
-    elif style == "numpy":
-        return f'''"""
-{name} {kind.lower()}.
-
-Parameters
-----------
-TODO
-    Describe parameters.
-
-Returns
--------
-TODO
-    Describe return value.
-"""'''
-
-    elif style == "rest":
-        return f'''"""
-{name} {kind.lower()}.
-
-:param TODO: Describe parameters
-:return: Describe return value
-"""'''
-
-    else:
-        return f'''"""
-{name} {kind.lower()}.
-"""'''
+    return results

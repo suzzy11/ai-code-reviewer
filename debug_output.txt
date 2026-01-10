@@ -1,0 +1,5 @@
+--- Parsing c:\Users\User\OneDrive\ai_code_reviewer\ai_code_reviewer\examples\sample_b.py ---
+Function: display_student_result, Docstring: YES
+Function: __init__, Docstring: NO
+Function: get_average, Docstring: NO
+Function: get_result, Docstring: NO

@@ -14,6 +14,7 @@ class Student:
 
 
 def display_student_result(student):
+
     print("Name:", student.name)
     print("Average:", student.get_average())
     print("Result:", student.get_result())

@@ -1,13 +1,12 @@
 def calculate_average(numbers):
     """
     Summary.
-    
+        
     Args:
-        param: Description.
+        numbers (list of int or float): A list of numbers for which to calculate the average.
     
     Returns:
-        Type: Description.
-    
+        float: The average of the input numbers.
     """
     return sum(numbers) / len(numbers)
 
