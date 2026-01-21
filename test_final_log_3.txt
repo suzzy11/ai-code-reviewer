@@ -1,0 +1,113 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\User\OneDrive\ai_code_reviewer\ai_code_reviewer
+plugins: anyio-4.10.0, json-report-1.5.0, metadata-3.1.1
+collected 22 items
+
+tests\test_generator.py FFF.                                             [ 18%]
+tests\test_llm_integration.py F.                                         [ 27%]
+tests\test_main.py ....                                                  [ 45%]
+tests\test_parser.py ......                                              [ 72%]
+tests\test_report.py ..                                                  [ 81%]
+tests\test_validator.py ....                                             [100%]
+
+================================== FAILURES ===================================
+_______________________________ test_gen_google _______________________________
+
+mock_groq = <MagicMock name='Groq' id='2694831210912'>
+
+    def test_gen_google(mock_groq):
+        mock_client = MagicMock()
+        mock_groq.return_value = mock_client
+        mock_client.chat.completions.create.return_value.choices[0].message.content = "Google Style Docstring"
+    
+        result = generate_docstring("def foo(): pass", style="google")
+        assert result == "Google Style Docstring"
+    
+        # Verify call arguments
+        call_args = mock_client.chat.completions.create.call_args
+        assert call_args.kwargs['model'] == "llama-3.1-8b-instant"
+>       assert "Google" in call_args.kwargs['messages'][1]['content']
+E       AssertionError: assert 'Google' in 'Style: google\nCode:\ndef foo(): pass'
+
+tests\test_generator.py:21: AssertionError
+_______________________________ test_gen_numpy ________________________________
+
+mock_groq = <MagicMock name='Groq' id='2694362251344'>
+
+    def test_gen_numpy(mock_groq):
+        mock_client = MagicMock()
+        mock_groq.return_value = mock_client
+        mock_client.chat.completions.create.return_value.choices[0].message.content = "Numpy Style Docstring"
+    
+        result = generate_docstring("def foo(): pass", style="numpy")
+        assert result == "Numpy Style Docstring"
+    
+        call_args = mock_client.chat.completions.create.call_args
+>       assert "Numpy" in call_args.kwargs['messages'][1]['content']
+E       AssertionError: assert 'Numpy' in 'Style: numpy\nCode:\ndef foo(): pass'
+
+tests\test_generator.py:32: AssertionError
+________________________________ test_gen_rest ________________________________
+
+mock_groq = <MagicMock name='Groq' id='2694831220656'>
+
+    def test_gen_rest(mock_groq):
+        mock_client = MagicMock()
+        mock_groq.return_value = mock_client
+        mock_client.chat.completions.create.return_value.choices[0].message.content = "ReST Style Docstring"
+    
+        result = generate_docstring("def foo(): pass", style="rest")
+        assert result == "ReST Style Docstring"
+    
+        call_args = mock_client.chat.completions.create.call_args
+>       assert "ReST" in call_args.kwargs['messages'][1]['content']
+E       AssertionError: assert 'ReST' in 'Style: rest\nCode:\ndef foo(): pass'
+
+tests\test_generator.py:43: AssertionError
+_______________________ test_llm_docstring_integration ________________________
+
+    def test_llm_docstring_integration():
+        """
+        Integration test that mocks the LLM but verifies the full flow:
+        Generator -> (Mock LLM) -> Output -> Validator -> Valid/Score
+        """
+    
+        # 1. Setup Source Code
+        source_code = "def add(a, b): return a + b"
+    
+        # 2. Mock LLM Response with a perfect docstring
+        perfect_docstring = """Summary of add.
+    
+    Args:
+        a: First number
+        b: Second number
+    
+    Returns:
+        Sum of a and b
+    """
+    
+        with patch("core.review_engine.groq_review.Groq") as mock_groq:
+            mock_client = MagicMock()
+            mock_groq.return_value = mock_client
+            mock_client.chat.completions.create.return_value.choices[0].message.content = perfect_docstring
+    
+            # 3. Generate Docstring
+            generated = generate_docstring(source_code, style="google")
+    
+            # 4. Validate Result
+>           assert generated == perfect_docstring
+E           AssertionError: assert 'Summary of a...um of a and b' == 'Summary of a... of a and b\n'
+E             
+E             Skipping 81 identical leading characters in diff, use -v to show
+E             -  of a and b
+E             ?            -
+E             +  of a and b
+
+tests\test_llm_integration.py:36: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_generator.py::test_gen_google - AssertionError: assert 'Goo...
+FAILED tests/test_generator.py::test_gen_numpy - AssertionError: assert 'Nump...
+FAILED tests/test_generator.py::test_gen_rest - AssertionError: assert 'ReST'...
+FAILED tests/test_llm_integration.py::test_llm_docstring_integration - Assert...
+======================== 4 failed, 18 passed in 2.88s =========================

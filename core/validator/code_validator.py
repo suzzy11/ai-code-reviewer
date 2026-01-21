@@ -78,3 +78,26 @@ class CodeValidator:
             "validation_message": msg,
             "score": self.get_score(node)
         }
+
+    def validate_file_pep257(self, file_path):
+        """
+        Runs complete PEP 257 validation on a file using pydocstyle.
+        Returns a list of violation dictionaries.
+        """
+        violations = []
+        try:
+            from pydocstyle import check
+            # pydocstyle.check yields objects with .code, .message, .line
+            for error in check([file_path], select=None, ignore=None): # Use defaults
+                violations.append({
+                    "code": error.code,
+                    "message": error.message,
+                    "line": error.line,
+                    "definition": error.definition.name if hasattr(error.definition, 'name') else "module"
+                })
+        except ImportError:
+            pass # Pydocstyle not installed, return empty list (UI handles this)
+        except Exception as e:
+            print(f"Pydocstyle error: {e}")
+            
+        return violations

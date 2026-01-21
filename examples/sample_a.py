@@ -1,63 +1,55 @@
+"""Provide core mathematical and utility functions for data processing."""
+import math
 def calculate_average(numbers):
     """
-    Summary.
+    Calculate the average of a list of numbers.
     
     Args:
-        param: Description.
+        numbers (list): A list of numbers to calculate the average from.
     
     Returns:
-        Type: Description.
-    
+        float: The average of the input numbers.
     """
-    return sum(numbers) / len(numbers)
+    total = 0
+    for n in numbers:
+        total += n
+    if len(numbers) == 0:
+        return 0
+    return total / len(numbers)
 
-
-def find_max(numbers):
+def add(a: int, b: int) -> int:
     """
-    Summary.
+    Calculate the sum of two integers.
     
-    Parameters
-    ----------
-    param : type
-        Description.
-    
-    Returns
-    -------
-    type
-        Description.
-    """
-    
-    return max(numbers)
-
-
-def find_min(numbers):
-    """
-    Find the minimum value in a list of numbers.
-
     Args:
-        numbers (list of int or float): A list containing numeric values.
-
+        a (int): The first integer to add.
+        b (int): The second integer to add.
+    
     Returns:
-        int or float: The minimum value in the list.
+        int: The sum of a and b.
     """
-    return min(numbers)
+    return a + b
 
+class Processor:
+    """A simple data processor class for handling integer values and data lists."""
+    num: int
+    def set_num(self, num: int):
+        """
+        Set the instance attribute 'num' to the given integer value.
+        
+        Args:
+            num (int): The integer value to be assigned to the instance attribute 'num'.
+        """
+        self.num = num
 
-def process_data(numbers):
-    """
-    Process numerical data and return basic statistics.
-
-    This function calculates the average, maximum, and minimum
-    values from a list of numbers.
-
-    Args:
-        numbers (list of int or float): A list containing numeric values.
-
-    Returns:
-        dict: A dictionary containing average, max, and min values.
-    """
-    return {
-        "average": calculate_average(numbers),
-        "max": find_max(numbers),
-        "min": find_min(numbers)
-    }
+    def process(self, data):
+        """
+        Process data items in the provided list.
+        
+        Args:
+            data (list): A list of items to be processed.
+        """
+        for item in data:
+            if item is None:
+                continue
+            print(item)

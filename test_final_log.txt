@@ -1,0 +1,295 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\User\OneDrive\ai_code_reviewer\ai_code_reviewer
+plugins: anyio-4.10.0, json-report-1.5.0, metadata-3.1.1
+collected 22 items
+
+tests\test_generator.py EEEF                                             [ 18%]
+tests\test_llm_integration.py FF                                         [ 27%]
+tests\test_main.py ....                                                  [ 45%]
+tests\test_parser.py ......                                              [ 72%]
+tests\test_report.py ..                                                  [ 81%]
+tests\test_validator.py ....                                             [100%]
+
+=================================== ERRORS ====================================
+______________________ ERROR at setup of test_gen_google ______________________
+
+    @pytest.fixture
+    def mock_groq():
+>       with patch("core.review_engine.groq_review.Groq") as mock:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_generator.py:7: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\Python313\Lib\unittest\mock.py:1497: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001EE8B3B41A0>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'core.review_engine.groq_review' from 'C:\\Users\\User\\OneDrive\\ai_code_reviewer\\ai_code_reviewer\\core\\review_engine\\groq_review.py'> does not have the attribute 'Groq'
+
+C:\Program Files\Python313\Lib\unittest\mock.py:1467: AttributeError
+______________________ ERROR at setup of test_gen_numpy _______________________
+
+    @pytest.fixture
+    def mock_groq():
+>       with patch("core.review_engine.groq_review.Groq") as mock:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_generator.py:7: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\Python313\Lib\unittest\mock.py:1497: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001EEA2205D10>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'core.review_engine.groq_review' from 'C:\\Users\\User\\OneDrive\\ai_code_reviewer\\ai_code_reviewer\\core\\review_engine\\groq_review.py'> does not have the attribute 'Groq'
+
+C:\Program Files\Python313\Lib\unittest\mock.py:1467: AttributeError
+_______________________ ERROR at setup of test_gen_rest _______________________
+
+    @pytest.fixture
+    def mock_groq():
+>       with patch("core.review_engine.groq_review.Groq") as mock:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_generator.py:7: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\Python313\Lib\unittest\mock.py:1497: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001EEA2206710>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'core.review_engine.groq_review' from 'C:\\Users\\User\\OneDrive\\ai_code_reviewer\\ai_code_reviewer\\core\\review_engine\\groq_review.py'> does not have the attribute 'Groq'
+
+C:\Program Files\Python313\Lib\unittest\mock.py:1467: AttributeError
+================================== FAILURES ===================================
+_________________________ test_gen_fallback_on_error __________________________
+
+    def test_gen_fallback_on_error():
+>       with patch("core.review_engine.groq_review.Groq", side_effect=Exception("API Error")):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_generator.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\Python313\Lib\unittest\mock.py:1497: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001EEA2229BA0>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'core.review_engine.groq_review' from 'C:\\Users\\User\\OneDrive\\ai_code_reviewer\\ai_code_reviewer\\core\\review_engine\\groq_review.py'> does not have the attribute 'Groq'
+
+C:\Program Files\Python313\Lib\unittest\mock.py:1467: AttributeError
+_______________________ test_llm_docstring_integration ________________________
+
+    def test_llm_docstring_integration():
+        """
+        Integration test that mocks the LLM but verifies the full flow:
+        Generator -> (Mock LLM) -> Output -> Validator -> Valid/Score
+        """
+    
+        # 1. Setup Source Code
+        source_code = "def add(a, b): return a + b"
+    
+        # 2. Mock LLM Response with a perfect docstring
+        perfect_docstring = """Summary of add.
+    
+    Args:
+        a: First number
+        b: Second number
+    
+    Returns:
+        Sum of a and b
+    """
+    
+>       with patch("core.review_engine.groq_review.Groq") as mock_groq:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_llm_integration.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\Python313\Lib\unittest\mock.py:1497: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001EEA2229F30>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'core.review_engine.groq_review' from 'C:\\Users\\User\\OneDrive\\ai_code_reviewer\\ai_code_reviewer\\core\\review_engine\\groq_review.py'> does not have the attribute 'Groq'
+
+C:\Program Files\Python313\Lib\unittest\mock.py:1467: AttributeError
+____________________ test_llm_docstring_integration_numpy _____________________
+
+    def test_llm_docstring_integration_numpy():
+        source_code = "def sub(a, b): return a - b"
+        numpy_doc = """
+    Summary.
+    
+    Parameters
+    ----------
+    a : int
+        First
+    b : int
+        Second
+    
+    Returns
+    -------
+    int
+        Result
+    """
+>       with patch("core.review_engine.groq_review.Groq") as mock_groq:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_llm_integration.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\Python313\Lib\unittest\mock.py:1497: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001EE88C569F0>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'core.review_engine.groq_review' from 'C:\\Users\\User\\OneDrive\\ai_code_reviewer\\ai_code_reviewer\\core\\review_engine\\groq_review.py'> does not have the attribute 'Groq'
+
+C:\Program Files\Python313\Lib\unittest\mock.py:1467: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_generator.py::test_gen_fallback_on_error - AttributeError: ...
+FAILED tests/test_llm_integration.py::test_llm_docstring_integration - Attrib...
+FAILED tests/test_llm_integration.py::test_llm_docstring_integration_numpy - ...
+ERROR tests/test_generator.py::test_gen_google - AttributeError: <module 'cor...
+ERROR tests/test_generator.py::test_gen_numpy - AttributeError: <module 'core...
+ERROR tests/test_generator.py::test_gen_rest - AttributeError: <module 'core....
+=================== 3 failed, 16 passed, 3 errors in 2.93s ====================
