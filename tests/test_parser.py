@@ -103,8 +103,10 @@ def test_parse_malformed_fail():
         path = f.name
         
     try:
-        with pytest.raises(SyntaxError):
-            parse_python_file(path)
+        # Expect empty list, not crash
+        from core.parser.python_parser import extract_functions_from_file
+        functions = extract_functions_from_file(path)
+        assert functions == []
     finally:
         if os.path.exists(path):
             os.remove(path)

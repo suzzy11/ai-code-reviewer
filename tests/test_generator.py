@@ -6,14 +6,22 @@ from core.docstring_engine.generator import (
     insert_module_docstring, 
     clean_docstring,
     analyze_code_metadata,
-    _IMPERATIVE_FIXES
+    _IMPERATIVE_FIXES,
+    _cached_gen
 )
+import core.review_engine.groq_review as groq_review
 
 @pytest.fixture
 def mock_groq():
     """Mock the Groq client used in groq_review module."""
-    with patch("groq.Groq") as mock:
+    # Clear caches between tests
+    _cached_gen.cache_clear()
+    groq_review._GROQ_CLIENT = None
+    with patch("core.review_engine.groq_review.Groq") as mock:
         yield mock
+    # Reset after test
+    _cached_gen.cache_clear()
+    groq_review._GROQ_CLIENT = None
 
 def test_gen_google(mock_groq):
     mock_client = MagicMock()
@@ -21,7 +29,8 @@ def test_gen_google(mock_groq):
     mock_client.chat.completions.create.return_value.choices[0].message.content = "Google Style Docstring"
     
     result = generate_docstring("def foo(): pass", style="google")
-    assert result == "Google Style Docstring"
+    # Note: clean_docstring adds period for PEP 257
+    assert result == "Google Style Docstring."
     
     # Verify call arguments
     call_args = mock_client.chat.completions.create.call_args
@@ -49,7 +58,8 @@ def test_gen_cleaning(mock_groq):
     mock_client.chat.completions.create.return_value.choices[0].message.content = "```python\nClean me\n```"
     
     result = generate_docstring("def clean_me(): pass", style="google")
-    assert result == "Clean me"
+    # Note: clean_docstring adds period for PEP 257
+    assert result == "Clean me."
 
 def test_gen_numpy(mock_groq):
     mock_client = MagicMock()
@@ -57,7 +67,8 @@ def test_gen_numpy(mock_groq):
     mock_client.chat.completions.create.return_value.choices[0].message.content = "Numpy Style Docstring"
     
     result = generate_docstring("def foo(): pass", style="numpy")
-    assert result == "Numpy Style Docstring"
+    # Note: clean_docstring adds period for PEP 257
+    assert result == "Numpy Style Docstring."
     
     call_args = mock_client.chat.completions.create.call_args
     assert "numpy" in call_args.kwargs['messages'][1]['content']
@@ -68,12 +79,15 @@ def test_gen_rest(mock_groq):
     mock_client.chat.completions.create.return_value.choices[0].message.content = "ReST Style Docstring"
     
     result = generate_docstring("def foo(): pass", style="rest")
-    assert result == "ReST Style Docstring"
+    # Note: clean_docstring adds period for PEP 257
+    assert result == "ReST Style Docstring."
     
     call_args = mock_client.chat.completions.create.call_args
     assert "rest" in call_args.kwargs['messages'][1]['content']
 
 def test_gen_fallback_on_error():
+    _cached_gen.cache_clear()  # Clear cache to ensure fresh call
+    groq_review._GROQ_CLIENT = None  # Reset global client
     with patch("core.review_engine.groq_review.Groq", side_effect=Exception("API Error")):
         result = generate_docstring("def foo(): pass", style="google")
         assert "Error: API Error" in result
@@ -191,4 +205,28 @@ def test_strict_hallucination():
     meta_safe = analyze_code_metadata(code_safe)
     cleaned_safe = clean_docstring(doc, metadata=meta_safe)
     assert "Raises:" not in cleaned_safe
+
+def test_attributes_preserved():
+    """Verify that Attributes section is NOT stripped."""
+    raw = """MyClass.
+
+    Attributes:
+        x (int): Value.
+    """
+    cleaned = clean_docstring(raw)
+    assert "Attributes:" in cleaned
+    assert "x (int): Value." in cleaned
+
+def test_class_metadata_analysis():
+    """Verify metadata extraction for classes."""
+    code = """
+class MyClass:
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+    """
+    meta = analyze_code_metadata(code)
+    assert "a" in meta["params"]
+    assert "b" in meta["params"]
+
 

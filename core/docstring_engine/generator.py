@@ -78,6 +78,14 @@ def analyze_code_metadata(source_code: str) -> Dict[str, Any]:
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if not metadata["params"]: # Only capture top-level func params
                     metadata["params"] = [a.arg for a in node.args.args if a.arg != 'self']
+
+            # 5. Class Params (from __init__)
+            elif isinstance(node, ast.ClassDef):
+                if not metadata["params"]:
+                    for subnode in node.body:
+                        if isinstance(subnode, ast.FunctionDef) and subnode.name == "__init__":
+                             metadata["params"] = [a.arg for a in subnode.args.args if a.arg != 'self']
+                             break
     except:
         # If partial code or error, fail safe
         metadata["has_return"] = True 
@@ -151,7 +159,7 @@ def clean_docstring(docstring: str, metadata: Dict[str, Any] = None) -> str:
             pass
 
     # 5. Remove Forbidden Sections
-    forbidden = ["Examples", "Example", "Notes", "See Also", "Attributes"]
+    forbidden = ["Examples", "Example", "Notes", "See Also"]
     for section in forbidden:
         # Google style
         docstring = re.sub(rf"\n\s*{section}:\s*\n.+?(\n\n|$)", "\n\n", docstring, flags=re.DOTALL)

@@ -7,3 +7,14 @@ __pycache__/
 
 # Runtime output
 storage/review_logs.json
+# Logs & debug
+*.txt
+debug_report.json
+report.json
+
+# Temp files
+temp_uploads/
+
+# Python cache
+__pycache__/
+*.pyc
